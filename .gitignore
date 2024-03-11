@@ -177,3 +177,9 @@ pyrightconfig.json
 
 /models/
 .hf_cache/
+.vscode
+
+input_img/
+output_img/
+*.pt
+*.pth
