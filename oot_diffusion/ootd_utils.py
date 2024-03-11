@@ -114,6 +114,19 @@ def get_mask_location(
         parser_mask_changeable += np.logical_and(
             parse_array, np.logical_not(parser_mask_fixed)
         )
+    elif category == "full_body":
+        parse_mask = (
+            (parse_array == 7).astype(np.float32)
+            + (parse_array == 4).astype(np.float32)
+            + (parse_array == 5).astype(np.float32)
+            + (parse_array == 6).astype(np.float32)
+            + (parse_array == 8).astype(np.float32)
+            + (parse_array == 17).astype(np.float32)
+        )
+
+        parser_mask_changeable += np.logical_and(
+            parse_array, np.logical_not(parser_mask_fixed)
+        )
     else:
         raise NotImplementedError
 
@@ -126,7 +139,7 @@ def get_mask_location(
     im_arms_right = Image.new("L", (width, height))
     arms_draw_left = ImageDraw.Draw(im_arms_left)
     arms_draw_right = ImageDraw.Draw(im_arms_right)
-    if category == "dresses" or category == "upper_body":
+    if category == "dresses" or category == "upper_body" or category == "full_body":
         shoulder_left = np.multiply(tuple(pose_data[5][:2]), height / 512.0)
         shoulder_right = np.multiply(tuple(pose_data[6][:2]), height / 512.0)
         elbow_left = np.multiply(tuple(pose_data[7][:2]), height / 512.0)
@@ -181,7 +194,7 @@ def get_mask_location(
 
     parser_mask_fixed = np.logical_or(parser_mask_fixed, parse_head)
     parse_mask = cv2.dilate(parse_mask, np.ones((5, 5), np.uint16), iterations=5)
-    if category == "dresses" or category == "upper_body":
+    if category == "dresses" or category == "upper_body" or category == "full_body":
         neck_mask = (parse_array == 18).astype(np.float32)
         neck_mask = cv2.dilate(neck_mask, np.ones((5, 5), np.uint16), iterations=1)
         neck_mask = np.logical_and(neck_mask, np.logical_not(parse_head))

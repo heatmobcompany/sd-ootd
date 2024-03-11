@@ -67,11 +67,10 @@ class OOTDiffusionModel:
         steps: int = 10,
         cfg: float = 2.0,
         num_samples: int = 1,
+        category = "upperbody",
     ):
         if hg_root is None:
             hg_root = DEFAULT_HG_ROOT
-
-        category = "upperbody"
 
         if isinstance(cloth_path, Image.Image):
             cloth_image = cloth_path

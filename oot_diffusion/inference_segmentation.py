@@ -13,6 +13,7 @@ _category_get_mask_input = {
     "upperbody": "upper_body",
     "lowerbody": "lower_body",
     "dress": "dresses",
+    "fullbody": "full_body",
 }
 
 DEFAULT_HG_ROOT = Path(os.getcwd()) / "oodt_models"
@@ -61,6 +62,7 @@ class ClothesMaskModel:
             human_parsing_model=self.human_parsing_model,
             pose_model=self.pose_model,
             hg_root=self.hg_root,
+            category="fullbody",
         )
 
     @staticmethod
@@ -69,18 +71,19 @@ class ClothesMaskModel:
         human_parsing_model: BodyParsingModel,
         pose_model: PoseModel,
         hg_root: str = None,
+        category = "upperbody",
     ):
         if hg_root is None:
             hg_root = DEFAULT_HG_ROOT
-
-        category = "upperbody"
 
         if isinstance(model_path, Image.Image):
             model_image = model_path
         else:
             model_image = Image.open(model_path)
 
-        model_image = resize_crop_center(model_image, 384, 512).convert("RGB")
+        width, height = model_image.size
+        if width > 1152 or height > 1152:
+            raise Exception("Input image is too large")
 
         start_model_parse = time.perf_counter()
 
@@ -94,12 +97,12 @@ class ClothesMaskModel:
         end_open_pose = time.perf_counter()
         print(f"Open pose in {end_open_pose - start_open_pose:.2f} seconds.")
         mask, mask_gray = get_mask_location(
-            "hd",
+            "dc",
             _category_get_mask_input[category],
             model_parse,
             keypoints,
-            width=384,
-            height=512,
+            width=width,
+            height=height,
         )
         mask = mask
         mask_gray = mask_gray
