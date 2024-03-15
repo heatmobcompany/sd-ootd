@@ -9,7 +9,7 @@ class PoseModel:
         settings.update({"weights_dir": hg_root})
 
     def load_pose_model(self):
-        self.pose_model = YOLO(os.path.join(self.cache_dir, "yolov8n-pose.pt"))
+        self.pose_model = YOLO(os.path.join(self.cache_dir if self.cache_dir is not None else "", "yolov8n-pose.pt"))
 
     def infer_keypoints(self, image: str | bytes | Image.Image):
         pose_results = self.pose_model(

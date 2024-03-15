@@ -50,9 +50,9 @@ def get_mask_location(
     parse_array = np.array(im_parse)
 
     if model_type == "hd":
-        arm_width = 60
+        arm_width = 30
     elif model_type == "dc":
-        arm_width = 45
+        arm_width = 25
     else:
         raise ValueError("model_type must be 'hd' or 'dc'!")
 

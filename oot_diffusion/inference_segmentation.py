@@ -82,38 +82,40 @@ class ClothesMaskModel:
             model_image = Image.open(model_path)
 
         width, height = model_image.size
-        if width > 1152 or height > 1152:
-            raise Exception("Input image is too large")
+        o_height = 512
+        o_width = width * o_height // height
+        o_model_image = resize_crop_center(model_image, o_width, o_height).convert("RGB")
+
 
         start_model_parse = time.perf_counter()
 
-        model_parse, _, face_mask = human_parsing_model.infer_parse_model(model_image)
+        model_parse, _, face_mask = human_parsing_model.infer_parse_model(o_model_image)
         end_model_parse = time.perf_counter()
         print(f"Model parse in {end_model_parse - start_model_parse:.2f} seconds.")
 
         start_open_pose = time.perf_counter()
 
-        keypoints = pose_model.infer_keypoints(model_image)
+        keypoints = pose_model.infer_keypoints(o_model_image)
         end_open_pose = time.perf_counter()
         print(f"Open pose in {end_open_pose - start_open_pose:.2f} seconds.")
         mask, mask_gray = get_mask_location(
-            "dc",
+            "hd",
             _category_get_mask_input[category],
             model_parse,
             keypoints,
-            width=width,
-            height=height,
+            width=o_width,
+            height=o_height,
         )
         mask = mask
         mask_gray = mask_gray
 
-        masked_vton_img = Image.composite(mask_gray, model_image, mask)
+        masked_vton_img = Image.composite(mask_gray, o_model_image, mask)
         masked_vton_img = masked_vton_img.convert("RGB")
 
         return (
-            masked_vton_img,
-            mask,
+            masked_vton_img.resize((width, height), Image.LANCZOS),
+            mask.resize((width, height), Image.LANCZOS),
             model_image,
-            model_parse,
-            face_mask,
+            model_parse.resize((width, height), Image.LANCZOS),
+            face_mask.resize((width, height), Image.LANCZOS),
         )
