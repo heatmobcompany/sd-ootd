@@ -34,8 +34,9 @@ def get_masked_image(input_image, mask_image):
     masked_array = np.zeros_like(input_array)
     for c in range(input_array.shape[2]):
         masked_array[:,:,c] = np.where(mask_array == 255, input_array[:,:,c], 0)
+    mask_image = Image.fromarray(mask_array)
     masked_image = Image.fromarray(masked_array)
-    return masked_image
+    return mask_image, masked_image
 
 def ootd_api(_: gr.Blocks, app: FastAPI):
     @app.post("/sdapi/v2/ootd/getmask")
@@ -59,8 +60,8 @@ def ootd_api(_: gr.Blocks, app: FastAPI):
         model_array = ~np.all(model_np == [0, 0, 0], axis=-1)
         model_mask = Image.fromarray(model_array.astype(np.uint8) * 255)
         
-        cloth_masked = get_masked_image(model_image, cloth_mask)
-        model_masked = get_masked_image(model_image, model_mask)
+        cloth_mask, cloth_masked = get_masked_image(model_image, cloth_mask)
+        model_mask, model_masked = get_masked_image(model_image, model_mask)
 
         logger.info(f"/sdapi/v2/ootd/getmask done in {(time.time() - t):.3f}")
         return [
