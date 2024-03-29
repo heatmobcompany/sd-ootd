@@ -181,5 +181,6 @@ pyrightconfig.json
 
 input_img/
 output_img/
+ootd_models/
 *.pt
 *.pth
