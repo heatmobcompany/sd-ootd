@@ -63,7 +63,8 @@ def ootd_api(_: gr.Blocks, app: FastAPI):
         logger.info("/sdapi/v2/ootd/getmask start")
         try:
             (_, cloth_mask, model_image, model_parse, _) = cmm.generate(
-                model_path=api.decode_base64_to_image(data.image)
+                model_path=api.decode_base64_to_image(data.image),
+                category="fullbody",
             )
         except Exception as e:
             return HTTPException(status_code=500, detail=str("Get mask error: " + str(e)))
