@@ -22,7 +22,7 @@ import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 from torch.utils import data
 
-import networks
+import hnetworks
 import utils.schp as schp
 from datasets.datasets import LIPDataSet
 from datasets.target_generation import generate_edge_tensor
@@ -92,7 +92,7 @@ def main():
     cudnn.benchmark = True
 
     # Model Initialization
-    AugmentCE2P = networks.init_model(args.arch, num_classes=args.num_classes, pretrained=args.imagenet_pretrain)
+    AugmentCE2P = hnetworks.init_model(args.arch, num_classes=args.num_classes, pretrained=args.imagenet_pretrain)
     model = DataParallelModel(AugmentCE2P)
     model.cuda()
 
@@ -110,7 +110,7 @@ def main():
         model.load_state_dict(checkpoint['state_dict'])
         start_epoch = checkpoint['epoch']
 
-    SCHP_AugmentCE2P = networks.init_model(args.arch, num_classes=args.num_classes, pretrained=args.imagenet_pretrain)
+    SCHP_AugmentCE2P = hnetworks.init_model(args.arch, num_classes=args.num_classes, pretrained=args.imagenet_pretrain)
     schp_model = DataParallelModel(SCHP_AugmentCE2P)
     schp_model.cuda()
 

@@ -22,7 +22,7 @@ from PIL import Image as PILImage
 import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 
-import networks
+import hnetworks
 from utils.miou import compute_mean_ioU
 from utils.transforms import BGR2RGB_transform
 from utils.transforms import transform_parsing, transform_logits
@@ -128,7 +128,7 @@ def main():
     h, w = map(int, args.input_size.split(','))
     input_size = [h, w]
 
-    model = networks.init_model(args.arch, num_classes=args.num_classes, pretrained=None)
+    model = hnetworks.init_model(args.arch, num_classes=args.num_classes, pretrained=None)
 
     IMAGE_MEAN = model.mean
     IMAGE_STD = model.std

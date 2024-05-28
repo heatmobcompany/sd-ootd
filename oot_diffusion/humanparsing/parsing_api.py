@@ -8,7 +8,7 @@ import os
 import torch
 import numpy as np
 import cv2
-import networks
+import hnetworks
 from collections import OrderedDict
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
@@ -129,7 +129,7 @@ def load_atr_model(model_path):
     num_classes = 18
     label = ['Background', 'Hat', 'Hair', 'Sunglasses', 'Upper-clothes', 'Skirt', 'Pants', 'Dress', 'Belt',
              'Left-shoe', 'Right-shoe', 'Face', 'Left-leg', 'Right-leg', 'Left-arm', 'Right-arm', 'Bag', 'Scarf']
-    model = networks.init_model('resnet101', num_classes=num_classes, pretrained=None)
+    model = hnetworks.init_model('resnet101', num_classes=num_classes, pretrained=None)
     state_dict = torch.load(model_path)['state_dict']
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
@@ -147,7 +147,7 @@ def load_lip_model(model_path):
     label = ['Background', 'Hat', 'Hair', 'Glove', 'Sunglasses', 'Upper-clothes', 'Dress', 'Coat',
                   'Socks', 'Pants', 'Jumpsuits', 'Scarf', 'Skirt', 'Face', 'Left-arm', 'Right-arm',
                   'Left-leg', 'Right-leg', 'Left-shoe', 'Right-shoe']
-    model = networks.init_model('resnet101', num_classes=num_classes, pretrained=None)
+    model = hnetworks.init_model('resnet101', num_classes=num_classes, pretrained=None)
     state_dict = torch.load(model_path)['state_dict']
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
