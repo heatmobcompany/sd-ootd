@@ -1,3 +1,5 @@
+import time
+t = time.time()
 import os
 from pathlib import Path
 import argparse
@@ -13,7 +15,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="oms diffusion")
     parser.add_argument("--person_path", type=str, default=str(example_model_path))
     parser.add_argument("--hg_root", type=str, default=str(DEFAULT_HG_ROOT))
-    parser.add_argument("--cache_dir", type=str, required=False)
+    parser.add_argument("--cache_dir", type=str, default="./.cache")
     parser.add_argument("--output_path", type=str, default="./output_img")
 
     args = parser.parse_args()
@@ -32,8 +34,9 @@ if __name__ == "__main__":
         cache_dir=args.cache_dir,
     )
 
-    (masked_vton_img, mask, model_image, model_parse, face_mask) = cmm.generate(
-        model_path=args.person_path
+    (masked_vton_img, mask, model_image, model_parse, _) = cmm.generate(
+        model_path=args.person_path,
+        category="fullbody",
     )
 
     # Save files
@@ -46,6 +49,6 @@ if __name__ == "__main__":
         model_image.save(f, "PNG")
     with open(f"{args.output_path}/model_parse.png", "wb") as f:
         model_parse.save(f, "PNG")
-    with open(f"{args.output_path}/face_mask.png", "wb") as f:
-        face_mask.save(f, "PNG")
     print(f"Saved files to {args.output_path}")
+
+print("Time taken:", time.time() - t)

@@ -8,7 +8,6 @@ from oot_diffusion.humanparsing.inference import BodyParsingModel
 from oot_diffusion.ootd_utils import get_mask_location, resize_crop_center
 from oot_diffusion.openpose.inference import PoseModel
 
-
 _category_get_mask_input = {
     "upperbody": "upper_body",
     "lowerbody": "lower_body",
@@ -34,11 +33,8 @@ class ClothesMaskModel:
 
         start_model_parse_load = time.perf_counter()
         self.human_parsing_model = BodyParsingModel(
-            device=self.device,
-            hg_root=self.hg_root,
             cache_dir=self.cache_dir,
         )
-        self.human_parsing_model.load_model()
         end_model_parse_load = time.perf_counter()
         print(
             f"Model parse load in {end_model_parse_load - start_model_parse_load:.2f} seconds."
@@ -56,13 +52,14 @@ class ClothesMaskModel:
     def generate(
         self,
         model_path: str | bytes | Path | Image.Image,
+        category="upperbody",
     ):
         return self.generate_static(
             model_path=model_path,
             human_parsing_model=self.human_parsing_model,
             pose_model=self.pose_model,
             hg_root=self.hg_root,
-            category="fullbody",
+            category=category,
         )
 
     @staticmethod
@@ -89,7 +86,7 @@ class ClothesMaskModel:
 
         start_model_parse = time.perf_counter()
 
-        model_parse, _, face_mask = human_parsing_model.infer_parse_model(o_model_image)
+        model_parse, face_mask = human_parsing_model.infer_parse_model(model_image.resize((384, 512)))
         end_model_parse = time.perf_counter()
         print(f"Model parse in {end_model_parse - start_model_parse:.2f} seconds.")
 
@@ -117,5 +114,5 @@ class ClothesMaskModel:
             mask.resize((width, height), Image.LANCZOS),
             model_image,
             model_parse.resize((width, height), Image.LANCZOS),
-            face_mask.resize((width, height), Image.LANCZOS),
+            None,
         )

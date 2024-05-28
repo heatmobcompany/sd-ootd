@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from PIL import Image, ImageDraw
 
-from oot_diffusion.humanparsing.utils import label_map, remove_outliers
+from oot_diffusion.humanparsing.utility import label_map, remove_outliers
 
 
 def extend_arm_mask(wrist, elbow, scale):
@@ -67,7 +67,6 @@ def get_mask_location(
         + (parse_array == label_map["right_shoe"]).astype(np.float32)
         + (parse_array == label_map["hat"]).astype(np.float32)
         + (parse_array == label_map["sunglasses"]).astype(np.float32)
-        + (parse_array == label_map["bag"]).astype(np.float32)
     )
 
     parser_mask_changeable = (parse_array == label_map["background"]).astype(np.float32)
@@ -121,6 +120,7 @@ def get_mask_location(
             + (parse_array == 5).astype(np.float32)
             + (parse_array == 6).astype(np.float32)
             + (parse_array == 8).astype(np.float32)
+            + (parse_array == 16).astype(np.float32)
             + (parse_array == 17).astype(np.float32)
         )
 
