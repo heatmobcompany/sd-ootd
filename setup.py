@@ -22,6 +22,7 @@ setup(
         "accelerate",
         "tqdm",
         "ultralytics",
+        "ninja==1.10.2",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",

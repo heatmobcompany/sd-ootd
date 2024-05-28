@@ -10,3 +10,4 @@ transformers
 accelerate
 tqdm
 ultralytics
+ninja==1.10.2
