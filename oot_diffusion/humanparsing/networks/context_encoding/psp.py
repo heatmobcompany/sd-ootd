@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from modules import InPlaceABNSync
+from hmodules import InPlaceABNSync
 
 
 class PSPModule(nn.Module):
