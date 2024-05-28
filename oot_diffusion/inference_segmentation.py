@@ -79,14 +79,13 @@ class ClothesMaskModel:
             model_image = Image.open(model_path)
 
         width, height = model_image.size
-        o_height = 512
+        o_height = min(height, 1152)
         o_width = width * o_height // height
         o_model_image = resize_crop_center(model_image, o_width, o_height).convert("RGB")
 
-
         start_model_parse = time.perf_counter()
 
-        model_parse, face_mask = human_parsing_model.infer_parse_model(model_image.resize((384, 512)))
+        model_parse, _ = human_parsing_model.infer_parse_model(o_model_image)
         end_model_parse = time.perf_counter()
         print(f"Model parse in {end_model_parse - start_model_parse:.2f} seconds.")
 

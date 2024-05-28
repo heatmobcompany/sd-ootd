@@ -28,6 +28,10 @@ class TryOutfitRequest(BaseModel):
     mask_image: str
     model_image: str
 
+cmm = ClothesMaskModel(
+    hg_root=str(DEFAULT_HG_ROOT),
+    cache_dir=str(DEFAULT_CACHE),
+)
 
 try:
     from helper.logging import Logger
@@ -57,10 +61,6 @@ def ootd_api(_: gr.Blocks, app: FastAPI):
     ):
         t = time.time()
         logger.info("/sdapi/v2/ootd/getmask start")
-        cmm = ClothesMaskModel(
-            hg_root=str(DEFAULT_HG_ROOT),
-            cache_dir=str(DEFAULT_CACHE),
-        )
         try:
             (_, cloth_mask, model_image, model_parse, _) = cmm.generate(
                 model_path=api.decode_base64_to_image(data.image)
