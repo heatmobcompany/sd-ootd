@@ -140,13 +140,13 @@ def get_mask_location(
     arms_draw_left = ImageDraw.Draw(im_arms_left)
     arms_draw_right = ImageDraw.Draw(im_arms_right)
     if category == "dresses" or category == "upper_body" or category == "full_body":
-        shoulder_left = np.multiply(tuple(pose_data[5][:2]), height / 512.0)
-        shoulder_right = np.multiply(tuple(pose_data[6][:2]), height / 512.0)
-        elbow_left = np.multiply(tuple(pose_data[7][:2]), height / 512.0)
-        elbow_right = np.multiply(tuple(pose_data[8][:2]), height / 512.0)
-        wrist_left = np.multiply(tuple(pose_data[9][:2]), height / 512.0)
-        wrist_right = np.multiply(tuple(pose_data[10][:2]), height / 512.0)
-        ARM_LINE_WIDTH = int(arm_width / 512 * height)
+        shoulder_left = np.multiply(tuple(pose_data[5][:2]), 1.0)
+        shoulder_right = np.multiply(tuple(pose_data[6][:2]), 1.0)
+        elbow_left = np.multiply(tuple(pose_data[7][:2]), 1.0)
+        elbow_right = np.multiply(tuple(pose_data[8][:2]), 1.0)
+        wrist_left = np.multiply(tuple(pose_data[9][:2]), 1.0)
+        wrist_right = np.multiply(tuple(pose_data[10][:2]), 1.0)
+        ARM_LINE_WIDTH = int(arm_width)
         size_left = [
             shoulder_left[0] - ARM_LINE_WIDTH // 2,
             shoulder_left[1] - ARM_LINE_WIDTH // 2,
