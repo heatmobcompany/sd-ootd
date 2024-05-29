@@ -79,13 +79,13 @@ class ClothesMaskModel:
             model_image = Image.open(model_path)
 
         width, height = model_image.size
-        o_height = min(height, 1152)
+        o_height = 512
         o_width = width * o_height // height
         o_model_image = resize_crop_center(model_image, o_width, o_height).convert("RGB")
 
         start_model_parse = time.perf_counter()
 
-        model_parse, _ = human_parsing_model.infer_parse_model(o_model_image)
+        model_parse, _ = human_parsing_model.infer_parse_model(model_image)
         end_model_parse = time.perf_counter()
         print(f"Model parse in {end_model_parse - start_model_parse:.2f} seconds.")
 
@@ -99,13 +99,13 @@ class ClothesMaskModel:
             _category_get_mask_input[category],
             model_parse,
             keypoints,
-            width=o_width,
-            height=o_height,
+            width=width,
+            height=height,
         )
         mask = mask
         mask_gray = mask_gray
 
-        masked_vton_img = Image.composite(mask_gray, o_model_image, mask)
+        masked_vton_img = Image.composite(mask_gray, model_image, mask)
         masked_vton_img = masked_vton_img.convert("RGB")
 
         return (
