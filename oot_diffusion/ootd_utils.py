@@ -50,9 +50,9 @@ def get_mask_location(
     parse_array = np.array(im_parse)
 
     if model_type == "hd":
-        arm_width = 30
+        arm_width = 50
     elif model_type == "dc":
-        arm_width = 25
+        arm_width = 40
     else:
         raise ValueError("model_type must be 'hd' or 'dc'!")
 
@@ -132,6 +132,8 @@ def get_mask_location(
 
     # Load pose points
     pose_data = keypoint["pose_keypoints_2d"]
+    if len(pose_data) == 0:
+        pose_data = [[0,0] for i in range(18)]
     # pose_data = np.array(pose_data)
     # pose_data = pose_data.reshape((-1, 2))
 
