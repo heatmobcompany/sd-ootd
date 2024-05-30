@@ -40,7 +40,7 @@ def refine_mask_ootd(mask):
 
 def get_mask_location(
     model_type: Literal["hd", "dc"],
-    category: Literal["upper_body", "lower_body", "dresses"],
+    category: Literal["upper_body", "lower_body", "dresses", "full_body"],
     model_parse: Image.Image,
     keypoint: dict,
     width: int = 384,
