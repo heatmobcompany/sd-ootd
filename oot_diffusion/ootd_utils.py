@@ -219,8 +219,13 @@ def get_mask_location(
     inpaint_mask = dst / 255 * 1
     mask = Image.fromarray(inpaint_mask.astype(np.uint8) * 255)
     mask_gray = Image.fromarray(inpaint_mask.astype(np.uint8) * 127)
-
-    return mask, mask_gray
+    
+    parse_body = (
+        np.where((parse_array != 0) & (parse_array != 16), 255, 0).astype(np.uint8)
+    )
+    parse_body = cv2.erode(parse_body, np.ones((3, 3), np.uint8), iterations=1)
+    body_mask = Image.fromarray(parse_body)
+    return mask, mask_gray, body_mask
 
 
 def resize_crop_center(

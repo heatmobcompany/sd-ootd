@@ -3,6 +3,8 @@ t = time.time()
 import os
 from pathlib import Path
 import argparse
+import numpy as np
+from PIL import Image
 
 from oot_diffusion.inference_segmentation import ClothesMaskModel
 
@@ -10,6 +12,17 @@ from oot_diffusion.inference_segmentation import ClothesMaskModel
 DEFAULT_HG_ROOT = Path(os.getcwd()) / "ootd_models"
 example_model_path = Path(__file__).parent / "oot_diffusion/assets/model_1.png"
 
+def get_masked_image(input_image, mask_image):
+    input_array = np.array(input_image)
+    mask_array = np.array(mask_image)
+    mask_array = np.where(mask_array > 127, 255, 0).astype(np.uint8)
+    masked_array = np.zeros_like(input_array)
+    for c in range(input_array.shape[2]):
+        masked_array[:, :, c] = np.where(
+            mask_array == 255, input_array[:, :, c], 0)
+    mask_image = Image.fromarray(mask_array)
+    masked_image = Image.fromarray(masked_array)
+    return mask_image, masked_image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="oms diffusion")
@@ -34,10 +47,12 @@ if __name__ == "__main__":
         cache_dir=args.cache_dir,
     )
 
-    (masked_vton_img, mask, model_image, model_parse, _) = cmm.generate(
+    (masked_vton_img, mask, model_image, model_parse, body_mask) = cmm.generate(
         model_path=args.person_path,
         category="fullbody",
     )
+    
+    body_mask, body_masked = get_masked_image(model_image, body_mask)
 
     # Save files
     os.makedirs(args.output_path, exist_ok=True)
@@ -49,6 +64,10 @@ if __name__ == "__main__":
         model_image.save(f, "PNG")
     with open(f"{args.output_path}/model_parse.png", "wb") as f:
         model_parse.save(f, "PNG")
+    with open(f"{args.output_path}/body_mask.png", "wb") as f:
+        body_mask.save(f, "PNG")
+    with open(f"{args.output_path}/body_masked.png", "wb") as f:
+        body_masked.save(f, "PNG")
     print(f"Saved files to {args.output_path}")
 
 print("Time taken:", time.time() - t)

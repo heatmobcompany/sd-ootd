@@ -94,7 +94,7 @@ class ClothesMaskModel:
         keypoints = pose_model.infer_keypoints(o_model_image)
         end_open_pose = time.perf_counter()
         print(f"Open pose in {end_open_pose - start_open_pose:.2f} seconds.")
-        mask, mask_gray = get_mask_location(
+        mask, mask_gray, body_mask = get_mask_location(
             "hd",
             _category_get_mask_input[category],
             model_parse,
@@ -113,5 +113,5 @@ class ClothesMaskModel:
             mask.resize((width, height), Image.LANCZOS),
             model_image,
             model_parse.resize((width, height), Image.LANCZOS),
-            None,
+            body_mask,
         )
