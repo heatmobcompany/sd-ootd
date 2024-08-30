@@ -6,6 +6,7 @@ from fastapi import FastAPI, Body, HTTPException
 from pydantic import BaseModel
 import gradio as gr
 import numpy as np
+import cv2
 from PIL import Image
 
 from oot_diffusion.inference_segmentation import ClothesMaskModel
@@ -53,6 +54,27 @@ def get_masked_image(input_image, mask_image):
     masked_image = Image.fromarray(masked_array)
     return mask_image, masked_image
 
+def calculate_body_ratio(image):
+    image = np.array(image)    
+    if len(image.shape) == 3:
+        gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    else:
+        gray_image = image
+    image_height = gray_image.shape[0]
+    white_pixels = np.any(gray_image == 255, axis=1)
+    white_height = np.sum(white_pixels)
+    body_ratio = white_height / image_height
+    return body_ratio
+
+def calculate_blur(image):
+    image = np.array(image)
+    if len(image.shape) == 3:
+        gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    else:
+        gray_image = image
+    laplacian = cv2.Laplacian(gray_image, cv2.CV_64F)
+    blur_value = laplacian.var()
+    return blur_value
 
 def ootd_api(_: gr.Blocks, app: FastAPI):
     @app.post("/sdapi/v2/ootd/getmask")
@@ -83,6 +105,38 @@ def ootd_api(_: gr.Blocks, app: FastAPI):
             api.encode_pil_to_base64(body_masked),
         ]
 
+    @app.post("/sdapi/v2/ootd/analyze-model")
+    async def analyze_image(
+        data: GetMaskRequest
+    ):
+        t = time.time()
+        logger.info("/sdapi/v2/ootd/analyze-model start")
+        try:
+            (_, cloth_mask, model_image, model_parse, body_mask) = cmm.generate(
+                model_path=api.decode_base64_to_image(data.image),
+                category="fullbody",
+            )
+        except Exception as e:
+            return HTTPException(status_code=500, detail=str("Get mask error: " + str(e)))
+        # convert model_parse to model_mask
+        model_np = np.array(model_parse.convert("RGB"))
+        model_array = ~np.all(model_np == [0, 0, 0], axis=-1)
+
+        cloth_mask, cloth_masked = get_masked_image(model_image, cloth_mask)
+        body_mask, body_masked = get_masked_image(model_image, body_mask)
+        
+        logger.info(f"/sdapi/v2/ootd/analyze-model done in {(time.time() - t):.3f}")
+        return {
+            "body_ratio": calculate_body_ratio(body_mask),
+            "blur_level": calculate_blur(body_masked),
+            "images": [
+            api.encode_pil_to_base64(cloth_mask),
+            api.encode_pil_to_base64(cloth_masked),
+            api.encode_pil_to_base64(body_mask),
+            api.encode_pil_to_base64(body_masked),
+            ]
+        }
+        
     @app.post("/sdapi/v2/ootd/try-outfit")
     async def tryOutfit(
         data: TryOutfitRequest
