@@ -22,7 +22,7 @@ DEFAULT_CACHE = Path(__file__).parent.parent / ".cache"
 
 class GetMaskRequest(BaseModel):
     image: str
-
+    mask_type: str = "fullbody"
 
 class TryOutfitRequest(BaseModel):
     cloth_image: str
@@ -86,7 +86,7 @@ def ootd_api(_: gr.Blocks, app: FastAPI):
         try:
             (_, cloth_mask, model_image, model_parse, body_mask) = cmm.generate(
                 model_path=api.decode_base64_to_image(data.image),
-                category="fullbody",
+                category=data.mask_type,
             )
         except Exception as e:
             return HTTPException(status_code=500, detail=str("Get mask error: " + str(e)))
@@ -111,10 +111,11 @@ def ootd_api(_: gr.Blocks, app: FastAPI):
     ):
         t = time.time()
         logger.info("/sdapi/v2/ootd/analyze-model start")
+        logger.info(f"Mask type: {data.mask_type}")
         try:
             (_, cloth_mask, model_image, model_parse, body_mask) = cmm.generate(
                 model_path=api.decode_base64_to_image(data.image),
-                category="fullbody",
+                category=data.mask_type,
             )
         except Exception as e:
             return HTTPException(status_code=500, detail=str("Get mask error: " + str(e)))
