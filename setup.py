@@ -17,7 +17,7 @@ setup(
         "scikit-image",
         "opencv-python",
         "pillow",
-        "diffusers==0.24.0",
+        "diffusers>=0.26.3",
         "transformers",
         "accelerate",
         "tqdm",

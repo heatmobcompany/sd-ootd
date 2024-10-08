@@ -26,11 +26,15 @@ from diffusers.configuration_utils import ConfigMixin, register_to_config
 from diffusers.models.embeddings import ImagePositionalEmbeddings
 from diffusers.utils import USE_PEFT_BACKEND, BaseOutput, deprecate
 # from diffusers.models.attention import BasicTransformerBlock
-from diffusers.models.embeddings import CaptionProjection, PatchEmbed
+from diffusers.models.embeddings import PatchEmbed
 from diffusers.models.lora import LoRACompatibleConv, LoRACompatibleLinear
 from diffusers.models.modeling_utils import ModelMixin
 from diffusers.models.normalization import AdaLayerNormSingle
 
+try:
+    from diffusers.models.embeddings import CaptionProjection
+except ImportError:
+    from diffusers.models.embeddings import PixArtAlphaTextProjection as CaptionProjection
 
 @dataclass
 class Transformer2DModelOutput(BaseOutput):
